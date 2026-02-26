@@ -2,9 +2,6 @@
 
 AI plugins for builders — agents, skills, and prompts from [handsonai.info](https://handsonai.info).
 
-> [!CAUTION]
-> Plugins can execute code and access external services. Review plugin contents before installing. Anthropic does not control what files or software are included in third-party plugins and cannot verify that they work as intended.
-
 ## Plugins
 
 | Plugin | Description | Components |
@@ -31,10 +28,19 @@ Register this marketplace so your tool knows where to find plugins. You only nee
 ### Install a plugin
 
 ```
-/plugin install business-first-ai@handsonai-plugins
+/plugin install business-first-ai@handsonai
 ```
 
 Replace `business-first-ai` with any plugin name from the table above.
+
+## Transparency & Security
+
+Every file in this repository is **plain-text Markdown** — there is no compiled code, no executable scripts, and no hidden logic. You can read exactly what instructions your AI receives before you install anything.
+
+These plugins contain only Markdown instruction files. There are no MCP servers, no external network calls, and no code execution beyond what your AI tool provides natively.
+
+> [!CAUTION]
+> Anthropic recommends reviewing any plugin before installing it: *"Make sure you trust a plugin before installing it. Anthropic does not control what files or software are included in plugins and cannot verify that they work as intended."*
 
 ## Structure
 
