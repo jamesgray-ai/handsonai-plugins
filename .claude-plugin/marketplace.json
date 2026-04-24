@@ -18,13 +18,13 @@
       "name": "ai-workflow-examples",
       "source": "./plugins/ai-workflow-examples",
       "description": "Working examples of AI workflows — agents for executive writing, editorial review, research, meeting prep, and AI news, plus supporting skills and portable prompts",
-      "version": "1.1.1"
+      "version": "1.1.2"
     },
     {
       "name": "ai-registry",
       "source": "./plugins/ai-registry",
       "description": "Skills for documenting, naming, registering, and syncing AI operational workflows and skills",
-      "version": "3.2.1"
+      "version": "3.2.2"
     },
     {
       "name": "agentic-coding",
