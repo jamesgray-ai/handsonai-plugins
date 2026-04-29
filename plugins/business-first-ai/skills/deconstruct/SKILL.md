@@ -1,11 +1,6 @@
 ---
 name: deconstruct
-description: >
-  This skill should be used when the user wants to deconstruct a workflow, break down a business
-  process, define an outcome for an agent system, or deeply analyze a workflow's steps, decisions,
-  data flows, and failure modes. Interactively decomposes a workflow into a structured Workflow
-  Definition using either the 6-question framework (step-decomposed) or an outcome-driven interview
-  (for autonomous agent systems). This is Step 2 of the Business-First AI Framework.
+description: "Interactively decomposes a workflow into a structured Workflow Definition using either the 6-question framework (step-decomposed) or an outcome-driven interview (for autonomous agent systems). Analyzes steps, decisions, data flows, context readiness, and failure modes. Use when the user wants to deconstruct a workflow, break down a business process, define an outcome for an agent system, map out how work gets done, or deeply analyze a workflow. This is Step 2 of the Business-First AI Framework."
 user-invocable: true
 ---
 
@@ -182,12 +177,7 @@ Where human review is expected — checkpoints during execution, or final review
 
 - Ask one question at a time — never present a wall of questions
 - Probe for missing steps — most people undercount by 30-50%
-- Surface hidden assumptions ("How do you decide when X is good enough?")
-- Use plain language; avoid jargon unless the user introduced it
-- Push beyond vague context answers like "domain knowledge" — identify the specific artifact
-- Surface the assumption that existing context — data, documents, transcripts, reference materials — will "just work" for AI. Most people underestimate the work required to make context AI-accessible, especially unstructured content like SOPs, style guides, meeting transcripts, and knowledge that lives in people's heads. Adopt a data strategist lens — help the user see where context reorganization, reformatting, or externalization is needed before they commit to a workflow design that depends on inaccessible context. Push beyond "it's in the CRM" or "I just know it" — ask what system it's in, what format it's in, and whether there's programmatic access or it requires manual steps. Leave specific integration mechanisms (MCP, API, SDK) to the Design step.
-- Stay in the "what" lane. Deconstruct defines the workflow, its context needs, and its failure modes. It does not prescribe how AI will access data, which tools to use, or what integrations to build — those are Design decisions (Step 3). If a technology concern surfaces, note it as a consideration for Design rather than resolving it here.
+- Push beyond vague context answers — identify the specific artifact, system, format, and access method. Adopt a data strategist lens to surface where context reorganization or externalization is needed before committing to a design that depends on inaccessible context.
+- Stay in the "what" lane — define the workflow, its context needs, and failure modes. Leave integration mechanisms (MCP, API, SDK) to the Design step.
 - After writing the Workflow Definition file, tell the user: "Workflow Definition saved to `outputs/[name]-definition.md`. Ready for Step 3 — Design."
-- If entering deconstruction without a prior analysis (direct workflow description), determine the lens by asking if not obvious from context.
-- For outcome-driven definitions, do not force step decomposition — the whole point is to capture what the agent system needs to know without prescribing execution steps.
-- When the problem-first funnel (option b) recommends outcome-driven, explain why: "This looks like a workflow where the agent system should determine its own approach. I'd recommend the outcome-driven path because [reasoning]."
+- For outcome-driven definitions, do not force step decomposition.
