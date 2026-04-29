@@ -1,6 +1,6 @@
 ---
 name: writing-vision-briefs
-description: Use when a user has a fuzzy idea they want to explore before writing a formal PRD. Captures the essence of an idea as a Vision Brief — a structured, business-focused artifact that feeds directly into the feature-prd workflow.
+description: "Guides early-stage idea exploration through a structured discovery interview, producing a Vision Brief that captures problem definition, target audience, key capabilities, success criteria, risks, and scope breakdown. Use when a user wants to brainstorm a product idea, explore a concept before writing a PRD, flesh out a rough idea, or says 'I have an idea', 'what if we built', or 'not sure what to build'. Feeds directly into the writing-feature-prds workflow."
 user-invocable: true
 ---
 
@@ -39,7 +39,7 @@ Ask the user questions **one at a time**. Use multiple-choice options when possi
 **Follow-up probe — Quantify the problem:**
 > "Can you put rough numbers on it? How often does this happen, how many people are affected, what does it cost in time or money?"
 
-If they can't quantify, that's fine — note it in the brief as a validation signal (e.g., "Impact not yet quantified — consider validating before building"). Don't push hard, but do flag it.
+If they can't quantify, note it as a validation signal in the brief.
 
 **Question 2 — Who Feels It:**
 > "Who specifically experiences this problem? What's their role or situation?"
@@ -53,27 +53,14 @@ Offer multiple-choice options based on common user types if the context suggests
 **Question 3 — Stakeholders & Decision-Makers:**
 > "Who else cares about this? Who needs to approve it, who's affected by the change, and who should review the solution before it ships?"
 
-Help the user think broadly:
-- Decision maker (who says yes/no to building this?)
-- Reviewers (who should weigh in on the approach?)
-- Affected parties (who's impacted even if they're not the primary user?)
-
-If the user says "just me," that's a valid answer — note it and move on.
-
 **Question 4 — Current State:**
 > "How are you handling this today? Any workarounds, tools, or manual processes — even ugly ones?"
-
-This reveals the severity of the pain (hacking together workarounds = high urgency), what "good enough" looks like (the bar to clear), and implicit requirements (what they like or hate about current approaches).
 
 **Follow-up — Alternatives considered:**
 > "Have you looked at existing solutions — tools, services, or approaches that already exist? What's missing from them, or why won't they work?"
 
-If they haven't explored alternatives, note that as a signal. If they have, capture what they tried and why it fell short.
-
 **Question 5 — Strategic Context:**
 > "Why is now the right time to solve this? What's changed — or what will happen if you don't act?"
-
-This separates "nice to have" ideas from urgent, high-value ones. If the user says "nothing specific," that's a useful signal too — note it and move on.
 
 **Question 6 — The Vision:**
 > "Imagine this problem is solved. What does the ideal outcome look like? Don't describe a solution — describe the result."
@@ -81,53 +68,27 @@ This separates "nice to have" ideas from urgent, high-value ones. If the user sa
 **Question 7 — Key Capabilities:**
 > "What 3-5 things must the solution be able to do? Write them from the user's perspective — 'I can...' or 'Users can...'"
 
-If the user gives a vague answer, help them break it down:
-> "Let me help break that down. It sounds like you need: [a], [b], and [c]. What am I missing?"
-
 **After capabilities are listed, ask the user to prioritize:**
 > "If you could only ship ONE of these capabilities, which one? That's your must-have. Which ones could wait for a later version?"
 
 Categorize each capability as **Must have** or **Nice to have** based on their answer.
 
 **Question 8 — Inspiration (optional):**
-> "Is there a product, feature, or experience — even in a different domain — that does something close to what you're imagining? This helps me understand the vibe you're going for."
->
-> "And on the flip side — is there a product that does this badly? What specifically would you want to avoid?"
-
-If the user says "nothing comes to mind" for either direction, skip those parts in the brief. Don't push — this is a bonus question.
+> "Is there a product, feature, or experience — even in a different domain — that does something close to what you're imagining? And on the flip side — is there one that does this badly?"
 
 **Question 9 — Success Criteria:**
 > "Let's define success in two timeframes:
 > - **Early signal** (first 1-2 weeks): What's the first sign this is working?
 > - **Real outcome** (1-3 months): What measurable result tells you this was worth building?"
 
-If the user struggles, offer concrete examples:
-> "For instance, an early signal might be 'setup completion goes from 60% to 85%' and a real outcome might be 'support tickets drop by half.' What would yours be?"
-
 **Question 10 — Risks & Assumptions:**
 > "What's the biggest risk or assumption here? What would need to be true for this to work — and what could derail it?"
-
-If the user says "I'm not sure," help them surface it:
-> "Every idea has a hidden bet. Yours might be something like 'users will actually use this if we build it' or 'the data we need already exists.' What's the bet you're making?"
 
 **Question 11 — Dependencies:**
 > "What needs to exist before you can build this? Any tools, data, infrastructure, decisions, or other features that must be in place first?"
 
-If the user says "nothing" or "not sure," probe gently:
-> "Think about it from two angles: technical prerequisites (data sources, APIs, platforms) and organizational ones (approvals, budget, team availability)."
-
 **Question 12 — Constraints:**
 > "What's already in place? Any boundaries I should know about — budget, timeline, existing tools, audience size?"
-
-If the user says "none" or "not sure," that's fine — note it in the brief and move on.
-
-### Tone guidelines
-
-- Use plain language. No technical jargon (no "architecture," "components," "data flow," "API").
-- Be encouraging and conversational. This is ideation, not interrogation.
-- If the user gives a long, rambling answer, reflect it back concisely: "So the core problem is [X] — does that capture it?"
-- If the user is struggling, offer examples to prime their thinking.
-- Coach toward specificity. If an answer is vague ("make things better"), gently push: "What does 'better' look like? Can you describe a moment where someone says 'this is working'?"
 
 ---
 

@@ -100,8 +100,6 @@ Used when the executor adapts its path at runtime. The agent's system prompt *is
 | When to Skip the Agent | When to run individual skills/steps directly |
 | Related | Links to agent file, upstream/downstream workflows |
 
-**Why lightweight?** The agent definition owns the step sequence, skill invocations, and constraints. Duplicating that logic in the SOP creates drift. The SOP's job is to tell a human how to *work with* the agent — not to re-describe what the agent does internally.
-
 ### YAML Frontmatter
 
 ```yaml
@@ -131,23 +129,10 @@ For Notion users with the AI Registry template: update the "SOP" URL property on
 
 ## Interaction Pattern
 
-### From framework artifacts (primary path)
-1. Read the Workflow Definition and Building Block Spec from the `outputs/` folder
-2. Confirm classification (execution mode + autonomy level) with user
-3. Fill any gaps not covered by the artifacts
-4. Draft SOP using the appropriate template and present for review
-5. Write markdown file after user approval
-6. Optionally update workflow tracker link
+All entry paths follow the same core flow: **load context → classify on both axes → gather missing details → draft SOP → write file after approval → optionally update tracker**.
 
-### From Notion or another tracker
-1. Fetch workflow record for context (name, type, trigger, etc.)
-2. Classify on both axes — determine full vs. lightweight template
-3. Gather procedure details or checkpoint details from user
-4. Draft SOP and present for review
-5. Write markdown file and update tracker link after approval
-
-### From scratch
-1. Gather workflow details conversationally (name, purpose, trigger, type, steps)
-2. Classify on both axes
-3. Draft SOP using the appropriate template
-4. Write markdown file after approval
+| Entry Path | Context Source | Classification |
+|------------|---------------|----------------|
+| **Framework artifacts** (primary) | Workflow Definition + Building Block Spec from `outputs/` | Confirm existing classification with user |
+| **Tracker** (Notion, Airtable, etc.) | Fetch workflow record for metadata | Classify on both axes from record details |
+| **From scratch** | Gather details conversationally | Classify on both axes from user input |

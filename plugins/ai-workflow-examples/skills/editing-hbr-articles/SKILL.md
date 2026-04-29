@@ -1,11 +1,6 @@
 ---
 name: editing-hbr-articles
-description: >
-  This skill should be used when the user wants to edit a business article to HBR publication
-  quality, review a draft before publication, improve business writing for executive audiences,
-  or mentions "HBR quality" or "publication ready". Makes prescriptive edits for clarity,
-  structure, evidence quality, and executive voice. Targets feature articles and thought
-  leadership pieces.
+description: "Makes prescriptive edits for clarity, structure, evidence quality, and executive voice to bring articles to HBR publication standards. Targets feature articles and thought leadership pieces. Use when the user wants to edit a business article to HBR publication quality, review a draft before publication, improve business writing for executive audiences, or mentions 'HBR quality' or 'publication ready'."
 user-invocable: true
 ---
 
@@ -18,7 +13,8 @@ Edit articles to Harvard Business Review publication standards. Make direct, pre
 1. **Read the article** completely before making any edits
 2. **Assess against criteria** in [references/editorial-criteria.md](references/editorial-criteria.md)
 3. **Make edits** directly to the file, focusing on highest-impact issues first
-4. **Provide summary** of changes made and rationale
+4. **Validate** — Re-read the edited article against the criteria checklist: verify thesis clarity, evidence quality, and word count target are met before finalizing
+5. **Provide summary** of changes made and rationale
 
 ## Edit Priority Order
 
