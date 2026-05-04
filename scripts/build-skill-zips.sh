@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-# Build ZIP files for each Business-First AI skill, ready to attach to a GitHub Release.
+# Build ZIP files for each Hands-on AI skill, ready to attach to a GitHub Release.
 # Usage: ./scripts/build-skill-zips.sh
 # Output: dist/<skill-name>.zip for each skill
 
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-SKILLS_DIR="$REPO_ROOT/plugins/business-first-ai/skills"
+SKILLS_DIR="$REPO_ROOT/plugins/handsonai/skills"
 DIST_DIR="$REPO_ROOT/dist"
 
 rm -rf "$DIST_DIR"
