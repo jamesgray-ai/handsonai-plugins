@@ -12,7 +12,7 @@
       "name": "handsonai",
       "source": "./plugins/handsonai",
       "description": "Everything you need to design, build, and document AI workflows — the Business-First AI Framework, AI registry, and feature-spec toolkit in one plugin",
-      "version": "1.0.0"
+      "version": "1.0.1"
     }
   ]
 }
