@@ -5,14 +5,14 @@
   },
   "metadata": {
     "description": "Claude Code plugins for AI builders from handsonai.info",
-    "version": "3.0.1"
+    "version": "4.0.0"
   },
   "plugins": [
     {
       "name": "handsonai",
       "source": "./plugins/handsonai",
       "description": "Everything you need to design, build, and document AI workflows — the AI Workflow Framework, AI registry, and feature-spec toolkit in one plugin",
-      "version": "3.0.1"
+      "version": "4.0.0"
     }
   ]
 }
