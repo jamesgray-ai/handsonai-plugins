@@ -25,8 +25,8 @@ Step 2 has **two paths**, mapped directly to the two ways students think about a
 
 | Path | When to use | Mental model |
 |------|-------------|--------------|
-| **Step-decomposed** | The work runs the same way each run — you can describe how it gets done, even if the steps aren't mapped yet | "I know how the work gets done" |
-| **Goal-driven** | You know what "done" looks like, but the work takes different steps depending on what comes in — so you give an agent system a goal and let it figure out the steps at runtime | "I know the goal" |
+| **Step-decomposed** *(a known-steps workflow)* | The work runs the same way each run — you can describe how it gets done, even if the steps aren't mapped yet. Design will classify it as a **deterministic or guided** workflow — both run on steps you own. | "I know how the work gets done" |
+| **Goal-driven** *(an agent system)* | You know what "done" looks like, but the work takes different steps depending on what comes in — so you give an agent system a goal and let it figure out the steps at runtime. Design classifies these as **autonomous**. | "I know the goal" |
 
 Both paths produce a Workflow Requirements document with the same shared shell — only the middle "what does the workflow do" block differs.
 
@@ -49,8 +49,8 @@ Worked example: *"Generate my weekly status report from the same three sources"*
    **Cold entry (no Analyze output)**: Ask one question:
 
    > "Is the work the same every run, or does it vary by input? (Quick test: imagine two different inputs — would the work take the same steps, or different steps?)
-   > - **Step-decomposed** — The work runs the same way each time. You don't need the steps written down — describing how the work gets done is enough, and I'll map and refine the steps with you, surfacing decision rules and edge cases along the way.
-   > - **Goal-driven** — The steps vary depending on what comes in, but you can describe the deliverable — what "done" looks like — and want an agent system to figure out the steps at runtime. A goal here is a concrete deliverable, not a business result: "a ranked list of 20 qualified prospects" is a goal; "higher revenue" is why you want it. I'll capture the goal, inputs, acceptance criteria, and rules."
+   > - **Known-steps workflow** *(step-decomposed)* — The work runs the same way each time — what the framework classifies as a **deterministic or guided** workflow. You don't need the steps written down — describing how the work gets done is enough, and I'll map and refine the steps with you, surfacing decision rules and edge cases along the way.
+   > - **Agent system** *(goal-driven)* — The steps vary depending on what comes in — an **autonomous** workflow. You can describe the deliverable — what "done" looks like — and want an agent system to figure out the steps at runtime. A goal here is a concrete deliverable, not a business result: "a ranked list of 20 qualified prospects" is a goal; "higher revenue" is why you want it. I'll capture the goal, inputs, acceptance criteria, and rules."
 
    When rendering this choice as a structured form (e.g., option cards), preserve the framing above: the step-decomposed card must say the work is *repeatable* and that the interview will map the steps — never "I can list the steps," which wrongly reads as an entry requirement. A "Not sure / I have a problem" option should invite the user in ("help me figure out the right workflow") rather than imply they lack a process.
 
@@ -81,6 +81,7 @@ Worked example: *"Generate my weekly status report from the same three sources"*
    - Discrete steps (is this actually multiple steps?)
    - Decision points (if/then branches, quality gates)
    - Data flows (inputs, outputs, sources, destinations)
+   - External actions (does this step *create, update, send, or delete* in an external system — a CRM record, an email, a calendar event, a database row? Flag it as a **write/action**, distinct from read-only context use. Name the action plainly; you're capturing the *requirement*, not the connector. Design will feasibility-check whether the chosen integration can actually perform it — a common failure is a connector that's read-only or simply has no such capability.)
    - Context needs (specific documents, files, reference materials)
    - Failure modes (what happens when this step fails)
    - Context readiness (adopt a data strategist lens for each step's context inputs — **sample these probes, don't interrogate: ask the one or two that matter for this step rather than all four every time**):
@@ -366,6 +367,7 @@ Insert between the Metadata table and the Context Inventory:
 - **Goal:** [what this step achieves, one sentence]
 - **Inputs:** [data/context coming in — name the artifact or reference a Context Inventory ID]
 - **Outputs:** [what passes to the next step]
+- **External Action:** [does this step write to an external system? Name the action — e.g., "creates and updates deal records in the CRM", "sends an email", "creates a calendar event" — or "None (read-only)". Design feasibility-checks each of these against the chosen integration.]
 - **Rules & Edge Cases:**
   - [decision criterion or branch]
   - [what to do when an input is missing, malformed, or empty]
