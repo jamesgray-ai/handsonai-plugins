@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-marketplace.json",
   "name": "handsonai",
-  "version": "6.0.10",
+  "version": "6.0.14",
   "description": "Claude Code plugins for AI builders from handsonai.info",
   "owner": {
     "name": "James Gray"
@@ -12,6 +12,12 @@
       "source": "./plugins/handsonai",
       "description": "Everything you need to design, build, and document AI workflows — the AI Workflow Framework, AI registry, and feature-spec toolkit in one plugin",
       "version": "6.0.10"
+    },
+    {
+      "name": "multi-agent-example",
+      "source": "./plugins/multi-agent-example",
+      "description": "A complete, runnable worked example of multi-agent orchestration. Four specialist agents research, write, edit, and publish a business article, with automatic delegation, machine quality gates, and an enforced human approval step. Built to be read and adapted, not used as-is.",
+      "version": "1.0.2"
     }
   ]
 }
