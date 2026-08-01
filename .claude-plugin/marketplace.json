@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-marketplace.json",
   "name": "handsonai",
-  "version": "6.0.14",
+  "version": "6.0.15",
   "description": "Claude Code plugins for AI builders from handsonai.info",
   "owner": {
     "name": "James Gray"
@@ -10,8 +10,8 @@
     {
       "name": "handsonai",
       "source": "./plugins/handsonai",
-      "description": "Everything you need to design, build, and document AI workflows — the AI Workflow Framework, AI registry, and feature-spec toolkit in one plugin",
-      "version": "6.0.10"
+      "description": "Everything you need to design, build, and document AI workflows. The AI Workflow Framework as executable Claude Code skills, plus an AI registry and feature-spec toolkit.",
+      "version": "6.1.0"
     },
     {
       "name": "multi-agent-example",
