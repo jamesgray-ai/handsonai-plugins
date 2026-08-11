@@ -13,11 +13,32 @@ DIST_DIR="$REPO_ROOT/dist"
 rm -rf "$DIST_DIR"
 mkdir -p "$DIST_DIR"
 
+# Every framework skill's dispatch blockquote defers to the shared write-rules
+# contract at indexing-registry/references/registry-bundle.md. A standalone skill
+# ZIP (claude.ai / ChatGPT upload) has no indexing-registry package, so without a
+# bundled copy the model improvises registry writes — the exact drift the contract
+# exists to prevent. Bundle the contract into every skill ZIP that references it,
+# under the skill's own references/, at build time only (the canonical file stays
+# single-source in indexing-registry; this stays out of the repo tree).
+CONTRACT="$SKILLS_DIR/indexing-registry/references/registry-bundle.md"
+[ -f "$CONTRACT" ] || { echo "ERROR: missing contract file $CONTRACT" >&2; exit 1; }
+
 echo "Building skill ZIPs..."
 for skill_dir in "$SKILLS_DIR"/*/; do
   skill_name="$(basename "$skill_dir")"
   # Zip from the parent directory so the ZIP contains the folder (not loose files)
   (cd "$SKILLS_DIR" && zip -r "$DIST_DIR/${skill_name}.zip" "$skill_name")
+  # Bundle the shared contract into any skill that references it but doesn't ship it
+  if [ "$skill_name" != "indexing-registry" ] \
+     && grep -rq "registry-bundle.md" "$skill_dir" \
+     && [ ! -f "${skill_dir}references/registry-bundle.md" ]; then
+    staging="$(mktemp -d)"
+    mkdir -p "$staging/$skill_name/references"
+    cp "$CONTRACT" "$staging/$skill_name/references/registry-bundle.md"
+    (cd "$staging" && zip "$DIST_DIR/${skill_name}.zip" "$skill_name/references/registry-bundle.md")
+    rm -rf "$staging"
+    echo "    + bundled references/registry-bundle.md"
+  fi
   echo "  ✓ ${skill_name}.zip"
 done
 
