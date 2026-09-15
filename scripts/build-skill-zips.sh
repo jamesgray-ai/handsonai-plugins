@@ -1,7 +1,14 @@
 #!/usr/bin/env bash
 # Build ZIP files for each Hands-on AI skill and agent, ready to attach to a GitHub Release.
 # Usage: ./scripts/build-skill-zips.sh
-# Output: dist/<skill-name>.zip for each skill, dist/<agent-name>.zip for each agent
+# Output: dist/<skill-name>.zip       — skill folder at the ZIP root (analyze/SKILL.md).
+#                                       What claude.ai's "Upload a skill" requires.
+#         dist/<skill-name>-flat.zip  — SKILL.md at the ZIP root, references/ beside it.
+#                                       What Gemini Enterprise documents ("SKILL.md in the
+#                                       root directory") and what Copilot Cowork and
+#                                       Gemini Spark describe. Same bytes, different
+#                                       nesting; the platform decides which one loads.
+#         dist/<agent-name>.zip       — each agent's single .md file
 
 set -euo pipefail
 
@@ -40,6 +47,14 @@ for skill_dir in "$SKILLS_DIR"/*/; do
     echo "    + bundled references/registry-bundle.md"
   fi
   echo "  ✓ ${skill_name}.zip"
+  # Flat variant: unpack the nested ZIP we just verified and re-zip from inside the
+  # skill folder, so both archives always carry identical content (including the
+  # bundled contract above) and can never drift from each other.
+  flat_staging="$(mktemp -d)"
+  unzip -q "$DIST_DIR/${skill_name}.zip" -d "$flat_staging"
+  (cd "$flat_staging/$skill_name" && zip -qr "$DIST_DIR/${skill_name}-flat.zip" .)
+  rm -rf "$flat_staging"
+  echo "  ✓ ${skill_name}-flat.zip"
 done
 
 echo ""

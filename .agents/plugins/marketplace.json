@@ -1,0 +1,20 @@
+{
+  "name": "handsonai",
+  "interface": {
+    "displayName": "Hands-on AI"
+  },
+  "plugins": [
+    {
+      "name": "handsonai",
+      "source": {
+        "source": "local",
+        "path": "./plugins/handsonai"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}
