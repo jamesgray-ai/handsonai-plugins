@@ -145,7 +145,10 @@ edits never rename files. A Workflow's slug matches its `outputs/<slug>/` folder
 # Artifact labels
 
 `# Artifacts` links on a Workflow node use these labels: Raw source, Run log, Output, SOP,
-Requirements, Design spec, Test results, Run guide, Improvement plan.
+Opportunity report, Requirements, Design spec, Test results, Run guide, Improvement plan.
+Each is a plain bulleted link whose link text is the label itself (link text `Requirements`,
+not a bold `Requirements:` prefix before the link), because lint and compose read the label
+from the link text.
 
 # Derived views & maintenance
 

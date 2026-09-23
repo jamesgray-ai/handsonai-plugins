@@ -32,12 +32,12 @@ No plugin support on your platform (Claude Free, ChatGPT Free/Go, Gemini, M365 C
 
 | Skill | Description |
 |-------|-------------|
-| `analyze` | Audit your workflows to find where AI creates the most value |
+| `analyze` | Audit your workflows to find where AI creates the most value, and register your chosen candidates as backlog Workflow nodes in your registry |
 | `deconstruct` | Break a workflow into structured steps using the 6-question framework |
 | `design` | Design the AI workflow architecture and produce a Design Spec |
 | `build` | Generate platform-appropriate artifacts from the approved spec |
 | `test` | Test workflow artifacts and evaluate output quality |
-| `run` | Generate a Run Guide for deploying and operating the workflow |
+| `run` | Do the first real run and leave a Run Card, run log, and review date |
 | `improve` | Evaluate a running workflow for quality and evolution opportunities |
 
 ### Skills — Knowledge Graph
@@ -50,7 +50,7 @@ No plugin support on your platform (Claude Free, ChatGPT Free/Go, Gemini, M365 C
 
 | Skill | Description |
 |-------|-------------|
-| `scaffolding-registry` | Stand up your `registry/` knowledge bundle — SCHEMA.md and a first real Business, Line of Business, Function, Process, and Workflow node |
+| `scaffolding-registry` | Stand up your `registry/` knowledge bundle — SCHEMA.md and real Business, Line of Business, Function, and Process nodes (Analyze adds the workflows) |
 | `naming-workflows` | Apply consistent naming conventions across your registry |
 | `writing-workflow-sops` | Author standard operating procedures for AI-assisted workflows |
 | `writing-process-guides` | Document multi-step processes for repeatable execution |
