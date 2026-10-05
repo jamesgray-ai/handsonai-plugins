@@ -1,9 +1,8 @@
 #!/usr/bin/env bash
-# Guards the two ZIP layouts build-skill-zips.sh publishes for every skill:
-#   <skill>.zip       skill folder at the root   — claude.ai upload
-#   <skill>-flat.zip  SKILL.md at the root       — Gemini Enterprise / Cowork / Spark
-# Both must unpack to identical content (the flat one is derived from the nested one),
-# or a student on one platform silently gets a different skill than a student on another.
+# Guards what build-skill-zips.sh publishes:
+#   <skill>.zip        skill folder at the root — one archive per skill, for every platform
+#   handsonai.plugin   the whole plugin, both manifests at the root — Claude/ChatGPT plugin upload
+# The -flat.zip layout was dropped 2026-10-05 (no platform needed it); this asserts it stays gone.
 #
 # Run: bash scripts/test-build-skill-zips.sh   (builds into a temp dir; leaves dist/ alone)
 
@@ -22,41 +21,33 @@ DIST="$TMP/dist"
 
 for skill_dir in "$ROOT"/plugins/handsonai/skills/*/; do
   skill="$(basename "$skill_dir")"
-  nested="$DIST/$skill.zip" flat="$DIST/$skill-flat.zip"
-  if [ ! -f "$nested" ] || [ ! -f "$flat" ]; then
-    bad "$skill: both $skill.zip and $skill-flat.zip must exist"; continue
+  nested="$DIST/$skill.zip"
+  if [ ! -f "$nested" ]; then
+    bad "$skill: $skill.zip must exist"; continue
   fi
-  # Layout: the nested archive's first entry is the skill folder; the flat one has SKILL.md at top level.
+  # Layout: the archive's first entry is the skill folder, not a loose SKILL.md.
   if unzip -Z1 "$nested" | grep -qx "$skill/SKILL.md" && ! unzip -Z1 "$nested" | grep -qx "SKILL.md"; then
     ok "$skill.zip has $skill/SKILL.md (folder at root)"
   else
     bad "$skill.zip layout wrong: $(unzip -Z1 "$nested" | head -3 | tr '\n' ' ')"
   fi
-  if unzip -Z1 "$flat" | grep -qx "SKILL.md" && ! unzip -Z1 "$flat" | grep -q "^$skill/"; then
-    ok "$skill-flat.zip has SKILL.md at root"
-  else
-    bad "$skill-flat.zip layout wrong: $(unzip -Z1 "$flat" | head -3 | tr '\n' ' ')"
-  fi
-  # Content: byte-identical trees once the folder level is stripped.
-  rm -rf "$TMP/a" "$TMP/b"; mkdir -p "$TMP/a" "$TMP/b"
-  unzip -q "$nested" -d "$TMP/a"; unzip -q "$flat" -d "$TMP/b"
-  if diff -r "$TMP/a/$skill" "$TMP/b" > /dev/null; then
-    ok "$skill: nested and flat archives carry identical content"
-  else
-    bad "$skill: nested and flat archives differ: $(diff -rq "$TMP/a/$skill" "$TMP/b" | head -2 | tr '\n' ' ')"
-  fi
 done
 
-# The contract bundling must survive into both archives for every skill that references it.
+if ls "$DIST"/*-flat.zip > /dev/null 2>&1; then
+  bad "no -flat.zip archives should be built: $(cd "$DIST" && ls *-flat.zip | head -3 | tr '\n' ' ')"
+else
+  ok "no -flat.zip archives built"
+fi
+
+# The contract bundling must survive into the archive of every skill that references it.
 for skill_dir in "$ROOT"/plugins/handsonai/skills/*/; do
   skill="$(basename "$skill_dir")"
   [ "$skill" = "indexing-registry" ] && continue
   grep -rq "registry-bundle.md" "$skill_dir" || continue
-  if unzip -Z1 "$DIST/$skill.zip" | grep -qx "$skill/references/registry-bundle.md" \
-     && unzip -Z1 "$DIST/$skill-flat.zip" | grep -qx "references/registry-bundle.md"; then
-    ok "$skill: registry-bundle.md bundled into both archives"
+  if unzip -Z1 "$DIST/$skill.zip" | grep -qx "$skill/references/registry-bundle.md"; then
+    ok "$skill: registry-bundle.md bundled into $skill.zip"
   else
-    bad "$skill: registry-bundle.md missing from one of the archives"
+    bad "$skill: registry-bundle.md missing from $skill.zip"
   fi
 done
 
