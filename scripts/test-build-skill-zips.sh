@@ -60,6 +60,23 @@ for skill_dir in "$ROOT"/plugins/handsonai/skills/*/; do
   fi
 done
 
+# The plugin archive must carry both manifests at its root (Claude + ChatGPT upload)
+# and every skill in the plugin.
+PLUGIN_LIST="$(unzip -Z1 "$DIST/handsonai.plugin" 2>/dev/null)"
+for manifest in .claude-plugin/plugin.json .codex-plugin/plugin.json; do
+  if printf '%s\n' "$PLUGIN_LIST" | grep -qx "$manifest"; then
+    ok "handsonai.plugin has $manifest at root"
+  else
+    bad "handsonai.plugin missing $manifest at root"
+  fi
+done
+for skill_dir in "$ROOT"/plugins/handsonai/skills/*/; do
+  skill="$(basename "$skill_dir")"
+  printf '%s\n' "$PLUGIN_LIST" | grep -qx "skills/$skill/SKILL.md" \
+    || bad "handsonai.plugin missing skills/$skill/SKILL.md"
+done
+ok "handsonai.plugin skill check ran"
+
 echo
 echo "$PASS passed, $FAIL failed"
 [ "$FAIL" -eq 0 ]

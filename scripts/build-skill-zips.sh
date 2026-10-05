@@ -68,7 +68,20 @@ for agent_file in "$AGENTS_DIR"/*.md; do
 done
 
 echo ""
+echo "Building plugin archive..."
+# The whole handsonai plugin as one uploadable archive, manifests at the archive root:
+# .claude-plugin/plugin.json (Claude: Customize → Plugins → + → Upload) and
+# .codex-plugin/plugin.json (ChatGPT: Customize → Plugins → Add → Upload plugin archive).
+# For students whose plan or org can't add a marketplace but can upload a plugin.
+PLUGIN_DIR="$REPO_ROOT/plugins/handsonai"
+for manifest in .claude-plugin/plugin.json .codex-plugin/plugin.json; do
+  [ -f "$PLUGIN_DIR/$manifest" ] || { echo "ERROR: missing $manifest in $PLUGIN_DIR" >&2; exit 1; }
+done
+(cd "$PLUGIN_DIR" && zip -qr "$DIST_DIR/handsonai.plugin" . -x '*.DS_Store')
+echo "  ✓ handsonai.plugin"
+
+echo ""
 echo "All ZIPs built in $DIST_DIR"
 echo ""
 echo "To create a release:"
-echo "  gh release create vX.Y.Z dist/*.zip --title 'vX.Y.Z' --notes 'Release notes here'"
+echo "  gh release create vX.Y.Z dist/*.zip dist/*.plugin --title 'vX.Y.Z' --notes 'Release notes here'"
