@@ -6,7 +6,8 @@
 #                                       Gemini Enterprise accepts it too. (The -flat.zip
 #                                       layout was dropped 2026-10-05: no platform needed it.)
 #         dist/<agent-name>.zip       — each agent's single .md file
-#         dist/handsonai.plugin       — the whole plugin, uploadable in Claude and ChatGPT
+#         dist/handsonai-plugin.zip   — the plugin's skills in one file, uploadable in Claude,
+#                                       ChatGPT, and Copilot Cowork (which accepts only .zip)
 
 set -euo pipefail
 
@@ -28,6 +29,14 @@ mkdir -p "$DIST_DIR"
 CONTRACT="$SKILLS_DIR/indexing-registry/references/registry-bundle.md"
 [ -f "$CONTRACT" ] || { echo "ERROR: missing contract file $CONTRACT" >&2; exit 1; }
 
+# Build, Design, Run, and Test read the platform registry. Their "Platform registry:" note
+# looks in the skill's own references/ first, so bundle a copy there at build time. One
+# canonical file stays in registries/; the copies exist only inside the ZIPs. Standalone
+# skill ZIPs and Copilot Cowork (which drops a plugin's top-level registries/) need it.
+PLATFORM_REGISTRY="$REPO_ROOT/plugins/handsonai/registries/platform-registry.json"
+[ -f "$PLATFORM_REGISTRY" ] || { echo "ERROR: missing $PLATFORM_REGISTRY" >&2; exit 1; }
+uses_platform_registry() { grep -q '^> \*\*Platform registry:\*\*' "$1/SKILL.md"; }
+
 echo "Building skill ZIPs..."
 for skill_dir in "$SKILLS_DIR"/*/; do
   skill_name="$(basename "$skill_dir")"
@@ -44,6 +53,14 @@ for skill_dir in "$SKILLS_DIR"/*/; do
     rm -rf "$staging"
     echo "    + bundled references/registry-bundle.md"
   fi
+  if uses_platform_registry "$skill_dir"; then
+    staging="$(mktemp -d)"
+    mkdir -p "$staging/$skill_name/references"
+    cp "$PLATFORM_REGISTRY" "$staging/$skill_name/references/platform-registry.json"
+    (cd "$staging" && zip -q "$DIST_DIR/${skill_name}.zip" "$skill_name/references/platform-registry.json")
+    rm -rf "$staging"
+    echo "    + bundled references/platform-registry.json"
+  fi
   echo "  ✓ ${skill_name}.zip"
 done
 
@@ -59,19 +76,33 @@ done
 
 echo ""
 echo "Building plugin archive..."
-# The whole handsonai plugin as one uploadable archive, manifests at the archive root:
+# The handsonai plugin as one uploadable archive, manifests at the archive root:
 # .claude-plugin/plugin.json (Claude: Customize → Plugins → + → Upload) and
 # .codex-plugin/plugin.json (ChatGPT: Customize → Plugins → Add → Upload plugin archive).
+# Copilot Cowork (Customize → Plugins → Add plugin) accepts only .zip, so it ships as .zip.
 # For students whose plan or org can't add a marketplace but can upload a plugin.
+# Skills only: ChatGPT ignores agents and Copilot plugins hold only skills and connectors, so
+# agents/ is left out; the framework-agent ships with the marketplace install and
+# framework-agent.zip. Copilot skips a top-level registries/ ("configuration item skipped"),
+# so it is left out too; each skill that reads it carries its own copy in references/.
 PLUGIN_DIR="$REPO_ROOT/plugins/handsonai"
 for manifest in .claude-plugin/plugin.json .codex-plugin/plugin.json; do
   [ -f "$PLUGIN_DIR/$manifest" ] || { echo "ERROR: missing $manifest in $PLUGIN_DIR" >&2; exit 1; }
 done
-(cd "$PLUGIN_DIR" && zip -qr "$DIST_DIR/handsonai.plugin" . -x '*.DS_Store')
-echo "  ✓ handsonai.plugin"
+(cd "$PLUGIN_DIR" && zip -qr "$DIST_DIR/handsonai-plugin.zip" . -x '*.DS_Store' -x 'agents/*' -x 'registries/*')
+staging="$(mktemp -d)"
+for skill_dir in "$SKILLS_DIR"/*/; do
+  uses_platform_registry "$skill_dir" || continue
+  skill_name="$(basename "$skill_dir")"
+  mkdir -p "$staging/skills/$skill_name/references"
+  cp "$PLATFORM_REGISTRY" "$staging/skills/$skill_name/references/platform-registry.json"
+done
+(cd "$staging" && zip -qr "$DIST_DIR/handsonai-plugin.zip" skills)
+rm -rf "$staging"
+echo "  ✓ handsonai-plugin.zip"
 
 echo ""
 echo "All ZIPs built in $DIST_DIR"
 echo ""
 echo "To create a release:"
-echo "  gh release create vX.Y.Z dist/*.zip dist/*.plugin --title 'vX.Y.Z' --notes 'Release notes here'"
+echo "  gh release create vX.Y.Z dist/*.zip --title 'vX.Y.Z' --notes 'Release notes here'"

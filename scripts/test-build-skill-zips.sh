@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
 # Guards what build-skill-zips.sh publishes:
 #   <skill>.zip        skill folder at the root — one archive per skill, for every platform
-#   handsonai.plugin   the whole plugin, both manifests at the root — Claude/ChatGPT plugin upload
+#   handsonai-plugin.zip  the whole plugin, both manifests at the root — Claude, ChatGPT,
+#                         and Copilot Cowork plugin upload (Copilot accepts only .zip)
+# Every SKILL.md frontmatter may use only the Agent Skills standard fields; Copilot Cowork
+# rejects the whole package on any other key (e.g. Claude Code's user-invocable).
 # The -flat.zip layout was dropped 2026-10-05 (no platform needed it); this asserts it stays gone.
 #
 # Run: bash scripts/test-build-skill-zips.sh   (builds into a temp dir; leaves dist/ alone)
@@ -53,20 +56,66 @@ done
 
 # The plugin archive must carry both manifests at its root (Claude + ChatGPT upload)
 # and every skill in the plugin.
-PLUGIN_LIST="$(unzip -Z1 "$DIST/handsonai.plugin" 2>/dev/null)"
+ARCHIVE="$DIST/handsonai-plugin.zip"
+PLUGIN_LIST="$(unzip -Z1 "$ARCHIVE" 2>/dev/null)"
 for manifest in .claude-plugin/plugin.json .codex-plugin/plugin.json; do
   if printf '%s\n' "$PLUGIN_LIST" | grep -qx "$manifest"; then
-    ok "handsonai.plugin has $manifest at root"
+    ok "handsonai-plugin.zip has $manifest at root"
   else
-    bad "handsonai.plugin missing $manifest at root"
+    bad "handsonai-plugin.zip missing $manifest at root"
   fi
 done
+missing=0
 for skill_dir in "$ROOT"/plugins/handsonai/skills/*/; do
   skill="$(basename "$skill_dir")"
   printf '%s\n' "$PLUGIN_LIST" | grep -qx "skills/$skill/SKILL.md" \
-    || bad "handsonai.plugin missing skills/$skill/SKILL.md"
+    || { bad "handsonai-plugin.zip missing skills/$skill/SKILL.md"; missing=1; }
 done
-ok "handsonai.plugin skill check ran"
+[ "$missing" -eq 0 ] && ok "handsonai-plugin.zip carries every skill"
+[ -e "$DIST/handsonai.plugin" ] && bad "handsonai.plugin should no longer be built (Copilot needs .zip)"
+# Skills only: ChatGPT ignores agents and Copilot Cowork skips them with a warning, so the
+# framework-agent ships through the marketplace install (and framework-agent.zip) instead.
+if printf '%s\n' "$PLUGIN_LIST" | grep -q '^agents/'; then
+  bad "handsonai-plugin.zip should not contain agents/ (skills only)"
+else
+  ok "handsonai-plugin.zip carries no agents (skills only)"
+fi
+
+# Platform registry: every skill whose SKILL.md carries the "Platform registry:" note must
+# ship its own byte-identical copy in references/, in its skill ZIP and in the plugin archive.
+# Copilot Cowork drops the top-level registries/ folder, so the plugin archive leaves it out.
+REG="$ROOT/plugins/handsonai/registries/platform-registry.json"
+for skill_dir in "$ROOT"/plugins/handsonai/skills/*/; do
+  skill="$(basename "$skill_dir")"
+  grep -q '^> \*\*Platform registry:\*\*' "$skill_dir/SKILL.md" || continue
+  if unzip -p "$DIST/$skill.zip" "$skill/references/platform-registry.json" 2>/dev/null | cmp -s - "$REG"; then
+    ok "$skill.zip carries references/platform-registry.json"
+  else
+    bad "$skill.zip missing or stale references/platform-registry.json"
+  fi
+  if unzip -p "$ARCHIVE" "skills/$skill/references/platform-registry.json" 2>/dev/null | cmp -s - "$REG"; then
+    ok "handsonai-plugin.zip carries skills/$skill/references/platform-registry.json"
+  else
+    bad "handsonai-plugin.zip missing or stale skills/$skill/references/platform-registry.json"
+  fi
+done
+if printf '%s\n' "$PLUGIN_LIST" | grep -q '^registries/'; then
+  bad "handsonai-plugin.zip should not contain top-level registries/ (Copilot skips it)"
+else
+  ok "handsonai-plugin.zip has no top-level registries/"
+fi
+
+# Agent Skills standard: frontmatter keys limited to these five. Checked inside every
+# archive that ships a SKILL.md, because that is what the platforms validate.
+ALLOWED='^(name|description|license|metadata|compatibility)$'
+for archive in "$DIST"/*.zip; do
+  for entry in $(unzip -Z1 "$archive" | grep 'SKILL.md$'); do
+    keys="$(unzip -p "$archive" "$entry" | awk 'NR==1&&/^---$/{fm=1;next} fm&&/^---$/{exit} fm&&/^[A-Za-z_-]+:/{sub(/:.*/,"");print}')"
+    badkeys="$(printf '%s\n' "$keys" | grep -Ev "$ALLOWED" | tr '\n' ' ')"
+    [ -n "${badkeys// /}" ] && bad "$(basename "$archive"):$entry has non-standard frontmatter: $badkeys"
+  done
+done
+ok "frontmatter check ran over every archive"
 
 echo
 echo "$PASS passed, $FAIL failed"
