@@ -14,9 +14,9 @@ The same plugin installs on Claude, ChatGPT/Codex, and Claude Code. Step-by-step
 instructions with screenshots, plus ZIP downloads for every other platform, are on the
 [skills setup page](https://handsonai.info/ai-workflow-framework/skills/).
 
-**Claude (claude.ai web, Claude Desktop, Cowork)** — paid plans:
+**Claude (web and desktop)** — paid plans:
 **Customize → Plugins → + → Add marketplace → Add from a repository** → `jamesgray-ai/handsonai-plugins` → install **handsonai**.
-The skills then work in Chat and Cowork; the `framework-agent` orchestrator runs in Cowork.
+The skills and the `framework-agent` orchestrator then work in Claude, on the web and on desktop.
 
 **ChatGPT (any paid plan) and Codex:**
 **Plugins → Add marketplace** → `jamesgray-ai/handsonai-plugins` → install **Hands-on AI**.
