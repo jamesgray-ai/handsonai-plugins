@@ -37,6 +37,18 @@ PLATFORM_REGISTRY="$REPO_ROOT/plugins/handsonai/registries/platform-registry.jso
 [ -f "$PLATFORM_REGISTRY" ] || { echo "ERROR: missing $PLATFORM_REGISTRY" >&2; exit 1; }
 uses_platform_registry() { grep -q '^> \*\*Platform registry:\*\*' "$1/SKILL.md"; }
 
+# auditing-agent-skills audits against hygiene-criteria.md, owned by
+# applying-skill-best-practices. It looks in its own references/ first, then beside it in
+# ../applying-skill-best-practices/, so bundle a copy into its references/ at build time
+# (unless it ships its own): a standalone ZIP, or Copilot storing each skill on its own,
+# can't reach the sibling folder.
+CRITERIA="$SKILLS_DIR/applying-skill-best-practices/references/hygiene-criteria.md"
+AUDIT_SKILL="auditing-agent-skills"
+needs_criteria() { [ "$1" = "$AUDIT_SKILL" ] && [ ! -f "$SKILLS_DIR/$1/references/hygiene-criteria.md" ]; }
+if [ -d "$SKILLS_DIR/$AUDIT_SKILL" ]; then
+  [ -f "$CRITERIA" ] || { echo "ERROR: missing $CRITERIA" >&2; exit 1; }
+fi
+
 echo "Building skill ZIPs..."
 for skill_dir in "$SKILLS_DIR"/*/; do
   skill_name="$(basename "$skill_dir")"
@@ -60,6 +72,14 @@ for skill_dir in "$SKILLS_DIR"/*/; do
     (cd "$staging" && zip -q "$DIST_DIR/${skill_name}.zip" "$skill_name/references/platform-registry.json")
     rm -rf "$staging"
     echo "    + bundled references/platform-registry.json"
+  fi
+  if needs_criteria "$skill_name"; then
+    staging="$(mktemp -d)"
+    mkdir -p "$staging/$skill_name/references"
+    cp "$CRITERIA" "$staging/$skill_name/references/hygiene-criteria.md"
+    (cd "$staging" && zip -q "$DIST_DIR/${skill_name}.zip" "$skill_name/references/hygiene-criteria.md")
+    rm -rf "$staging"
+    echo "    + bundled references/hygiene-criteria.md"
   fi
   echo "  ✓ ${skill_name}.zip"
 done
@@ -97,6 +117,10 @@ for skill_dir in "$SKILLS_DIR"/*/; do
   mkdir -p "$staging/skills/$skill_name/references"
   cp "$PLATFORM_REGISTRY" "$staging/skills/$skill_name/references/platform-registry.json"
 done
+if [ -d "$SKILLS_DIR/$AUDIT_SKILL" ] && needs_criteria "$AUDIT_SKILL"; then
+  mkdir -p "$staging/skills/$AUDIT_SKILL/references"
+  cp "$CRITERIA" "$staging/skills/$AUDIT_SKILL/references/hygiene-criteria.md"
+fi
 (cd "$staging" && zip -qr "$DIST_DIR/handsonai-plugin.zip" skills)
 rm -rf "$staging"
 echo "  ✓ handsonai-plugin.zip"

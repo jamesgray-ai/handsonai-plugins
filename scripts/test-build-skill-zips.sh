@@ -99,6 +99,23 @@ for skill_dir in "$ROOT"/plugins/handsonai/skills/*/; do
     bad "handsonai-plugin.zip missing or stale skills/$skill/references/platform-registry.json"
   fi
 done
+# Audit checklist: auditing-agent-skills reads hygiene-criteria.md, owned by
+# applying-skill-best-practices. Its own references/ is checked first, so both its skill
+# ZIP and the plugin archive carry a byte-identical copy (a standalone upload, or Copilot
+# storing each skill on its own, can't reach ../applying-skill-best-practices/).
+CRIT="$ROOT/plugins/handsonai/skills/applying-skill-best-practices/references/hygiene-criteria.md"
+if [ -d "$ROOT/plugins/handsonai/skills/auditing-agent-skills" ]; then
+  if unzip -p "$DIST/auditing-agent-skills.zip" "auditing-agent-skills/references/hygiene-criteria.md" 2>/dev/null | cmp -s - "$CRIT"; then
+    ok "auditing-agent-skills.zip carries references/hygiene-criteria.md"
+  else
+    bad "auditing-agent-skills.zip missing or stale references/hygiene-criteria.md"
+  fi
+  if unzip -p "$ARCHIVE" "skills/auditing-agent-skills/references/hygiene-criteria.md" 2>/dev/null | cmp -s - "$CRIT"; then
+    ok "handsonai-plugin.zip carries skills/auditing-agent-skills/references/hygiene-criteria.md"
+  else
+    bad "handsonai-plugin.zip missing or stale skills/auditing-agent-skills/references/hygiene-criteria.md"
+  fi
+fi
 if printf '%s\n' "$PLUGIN_LIST" | grep -q '^registries/'; then
   bad "handsonai-plugin.zip should not contain top-level registries/ (Copilot skips it)"
 else
