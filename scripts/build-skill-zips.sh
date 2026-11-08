@@ -29,13 +29,15 @@ mkdir -p "$DIST_DIR"
 CONTRACT="$SKILLS_DIR/indexing-registry/references/registry-bundle.md"
 [ -f "$CONTRACT" ] || { echo "ERROR: missing contract file $CONTRACT" >&2; exit 1; }
 
-# Build, Design, Run, and Test read the platform registry. Their "Platform registry:" note
-# looks in the skill's own references/ first, so bundle a copy there at build time. One
+# Skills that look platform facts up on the official pages read platform-docs.json (doc links
+# only, no claims). Their "Platform docs:" note, and the shared references/platform-facts.md,
+# look in the skill's own references/ first, so bundle a copy there at build time. One
 # canonical file stays in registries/; the copies exist only inside the ZIPs. Standalone
 # skill ZIPs and Copilot Cowork (which drops a plugin's top-level registries/) need it.
-PLATFORM_REGISTRY="$REPO_ROOT/plugins/handsonai/registries/platform-registry.json"
-[ -f "$PLATFORM_REGISTRY" ] || { echo "ERROR: missing $PLATFORM_REGISTRY" >&2; exit 1; }
-uses_platform_registry() { grep -q '^> \*\*Platform registry:\*\*' "$1/SKILL.md"; }
+# (Replaced platform-registry.json in handsonai 10.4.0.)
+PLATFORM_DOCS="$REPO_ROOT/plugins/handsonai/registries/platform-docs.json"
+[ -f "$PLATFORM_DOCS" ] || { echo "ERROR: missing $PLATFORM_DOCS" >&2; exit 1; }
+uses_platform_docs() { grep -q '^> \*\*Platform docs:\*\*' "$1/SKILL.md" || [ -f "$1/references/platform-facts.md" ]; }
 
 # auditing-agent-skills audits against hygiene-criteria.md, owned by
 # applying-skill-best-practices. It looks in its own references/ first, then beside it in
@@ -65,13 +67,13 @@ for skill_dir in "$SKILLS_DIR"/*/; do
     rm -rf "$staging"
     echo "    + bundled references/registry-bundle.md"
   fi
-  if uses_platform_registry "$skill_dir"; then
+  if uses_platform_docs "$skill_dir"; then
     staging="$(mktemp -d)"
     mkdir -p "$staging/$skill_name/references"
-    cp "$PLATFORM_REGISTRY" "$staging/$skill_name/references/platform-registry.json"
-    (cd "$staging" && zip -q "$DIST_DIR/${skill_name}.zip" "$skill_name/references/platform-registry.json")
+    cp "$PLATFORM_DOCS" "$staging/$skill_name/references/platform-docs.json"
+    (cd "$staging" && zip -q "$DIST_DIR/${skill_name}.zip" "$skill_name/references/platform-docs.json")
     rm -rf "$staging"
-    echo "    + bundled references/platform-registry.json"
+    echo "    + bundled references/platform-docs.json"
   fi
   if needs_criteria "$skill_name"; then
     staging="$(mktemp -d)"
@@ -112,10 +114,10 @@ done
 (cd "$PLUGIN_DIR" && zip -qr "$DIST_DIR/handsonai-plugin.zip" . -x '*.DS_Store' -x 'agents/*' -x 'registries/*')
 staging="$(mktemp -d)"
 for skill_dir in "$SKILLS_DIR"/*/; do
-  uses_platform_registry "$skill_dir" || continue
+  uses_platform_docs "$skill_dir" || continue
   skill_name="$(basename "$skill_dir")"
   mkdir -p "$staging/skills/$skill_name/references"
-  cp "$PLATFORM_REGISTRY" "$staging/skills/$skill_name/references/platform-registry.json"
+  cp "$PLATFORM_DOCS" "$staging/skills/$skill_name/references/platform-docs.json"
 done
 if [ -d "$SKILLS_DIR/$AUDIT_SKILL" ] && needs_criteria "$AUDIT_SKILL"; then
   mkdir -p "$staging/skills/$AUDIT_SKILL/references"

@@ -81,22 +81,26 @@ else
   ok "handsonai-plugin.zip carries no agents (skills only)"
 fi
 
-# Platform registry: every skill whose SKILL.md carries the "Platform registry:" note must
-# ship its own byte-identical copy in references/, in its skill ZIP and in the plugin archive.
-# Copilot Cowork drops the top-level registries/ folder, so the plugin archive leaves it out.
-REG="$ROOT/plugins/handsonai/registries/platform-registry.json"
+# Platform docs: every skill whose SKILL.md carries the "Platform docs:" note, or that ships
+# references/platform-facts.md, must ship its own byte-identical copy of platform-docs.json in
+# references/, in its skill ZIP and in the plugin archive. Copilot Cowork drops the top-level
+# registries/ folder, so the plugin archive leaves it out. (platform-registry.json is retired.)
+REG="$ROOT/plugins/handsonai/registries/platform-docs.json"
 for skill_dir in "$ROOT"/plugins/handsonai/skills/*/; do
   skill="$(basename "$skill_dir")"
-  grep -q '^> \*\*Platform registry:\*\*' "$skill_dir/SKILL.md" || continue
-  if unzip -p "$DIST/$skill.zip" "$skill/references/platform-registry.json" 2>/dev/null | cmp -s - "$REG"; then
-    ok "$skill.zip carries references/platform-registry.json"
+  grep -q '^> \*\*Platform docs:\*\*' "$skill_dir/SKILL.md" || [ -f "$skill_dir/references/platform-facts.md" ] || continue
+  if unzip -p "$DIST/$skill.zip" "$skill/references/platform-docs.json" 2>/dev/null | cmp -s - "$REG"; then
+    ok "$skill.zip carries references/platform-docs.json"
   else
-    bad "$skill.zip missing or stale references/platform-registry.json"
+    bad "$skill.zip missing or stale references/platform-docs.json"
   fi
-  if unzip -p "$ARCHIVE" "skills/$skill/references/platform-registry.json" 2>/dev/null | cmp -s - "$REG"; then
-    ok "handsonai-plugin.zip carries skills/$skill/references/platform-registry.json"
+  if unzip -p "$ARCHIVE" "skills/$skill/references/platform-docs.json" 2>/dev/null | cmp -s - "$REG"; then
+    ok "handsonai-plugin.zip carries skills/$skill/references/platform-docs.json"
   else
-    bad "handsonai-plugin.zip missing or stale skills/$skill/references/platform-registry.json"
+    bad "handsonai-plugin.zip missing or stale skills/$skill/references/platform-docs.json"
+  fi
+  if unzip -l "$DIST/$skill.zip" 2>/dev/null | grep -q "platform-registry.json"; then
+    bad "$skill.zip still carries the retired platform-registry.json"
   fi
 done
 # Audit checklist: auditing-agent-skills reads hygiene-criteria.md, owned by
