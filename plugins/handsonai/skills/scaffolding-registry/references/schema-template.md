@@ -219,6 +219,8 @@ OKF v0.3 §6, exact:
   `superseded_by` resolve the same way. A trailing `/` marks a directory target. Lint errors on a
   link of this form that lands inside the bundle, and names the form to write instead.
 - **Full URLs** = external.
+- **Code is not a link** (OKF v0.3 §6.1): text in inline code or a fenced block that looks like a
+  link (an example of the form) is never read as one, so it is never checked or counted.
 
 Links into gitignored paths (e.g. `outputs/`, where a workflow's own output may land) are
 declarations, not guarantees: lint checks them when the target is present and skips them otherwise.
@@ -249,7 +251,8 @@ stamped with a UTC instant that carries one is a lint error.
 # Derived views & maintenance
 
 Derived views are: the root dashboard (`REGISTRY.md`), `registry-dashboard.html` (generated at the end of setup, refreshed on every maintenance pass once it exists),
-each directory's `index.md`, and GENERATED blocks inside nodes — hash-less paired markers
+each directory's `index.md` (one entry per page: its root-relative link, then ` — ` and the
+page's `description`, on one line; OKF v0.3 §8), and GENERATED blocks inside nodes — hash-less paired markers
 (`<!-- GENERATED:<name> -->` … `<!-- /GENERATED -->`); never hand-edit content between the
 markers. Regenerating `index.md` keeps the root index's frontmatter (§8.1).
 

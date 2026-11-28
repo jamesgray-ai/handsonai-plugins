@@ -91,6 +91,8 @@ skill sets a registry up when the leader wants one.
    - Never write a file-relative link to another registry page (`../processes/x.md`): use the
      `/` form.
    - A full URL: external.
+   - Text in inline code or a fenced block that looks like a link is not one (OKF v0.3 §6.1):
+     the checks skip it, by hand as in the scripts.
    - **A registry still at OKF 0.2** (its root `index.md` says `okf_version: "0.2"`, or no
      version): its older links were written from the registry's parent folder (this profile's
      own 0.2 rule, not the spec's §12.1 fallback to the bundle root)
@@ -306,6 +308,8 @@ the two.
 - Function node missing its GENERATED `# Owns` marker block
 - Unterminated GENERATED block
 - A concept file missing from its directory index, or a typed directory missing its `index.md`
+  (an entry is `- [Title](/dir/slug.md) — [description]`; an entry without its description is a
+  stale view that the next refresh rewrites, never an error)
   (index coverage)
 - **Claims sweep:** an SOP claimed by no Workflow node's `# Artifacts` (or by more than one)
 - SOP `workflow:` back-pointer disagreeing with the claiming node
